@@ -1,34 +1,15 @@
 package app
 
+import app.datasource.ComputerDataSourceImpl
 import app.model.ComputerSpec
+import app.utils.IOUtils
 import java.lang.Exception
 import java.lang.IllegalStateException
 
+
 class App(var creatorName: String? = null) { //Default value Constructor
 
-    private var computerData = listOf(
-        ComputerSpec(
-            processorName = "Intel i9",
-            processorTotalCore = 8,
-            isHaveIGPU = true,
-            totalRamInGb = 32,
-            EGPUName = "RTX 4060"
-        ),// computer 1
-        ComputerSpec(
-            processorName = "Intel i7",
-            processorTotalCore = 8,
-            isHaveIGPU = false,
-            totalRamInGb = 16,
-            EGPUName = "RTX 3060"
-        ),// computer 2
-        ComputerSpec(
-            processorName = "Intel i3",
-            processorTotalCore = 6,
-            isHaveIGPU = false,
-            totalRamInGb = 16,
-            EGPUName = "RTX 2080"
-        )// computer 3
-    )
+    private var computerData = ComputerDataSourceImpl().getComputerList()
     private var selectedComputer: ComputerSpec? = null
 
     fun run() {
@@ -50,8 +31,8 @@ class App(var creatorName: String? = null) { //Default value Constructor
 
     private fun getSelectedComputer() {
         println("Masukan pilhan anda : ")
-        try {
-            val selectedIndex = readln().toInt()
+        val selectedIndex = IOUtils.getInputInteger()
+        selectedIndex?.let {
             if (selectedIndex in 1..computerData.size) {
                 selectedComputer = computerData[selectedIndex - 1]
                 println("Pilihan komputer anda : $selectedComputer")
@@ -59,10 +40,11 @@ class App(var creatorName: String? = null) { //Default value Constructor
                 println("Pilihan anda salah, Silahkan coba lagi")
                 getSelectedComputer()
             }
-        } catch (e: Exception) {
-            println("Menu Anda Salah")
-            getSelectedComputer()//recursive
+        } ?: run {
+            println("Input Anda salah ! coba lagi")
+            getSelectedComputer()
         }
+
     }
 
     companion object {
